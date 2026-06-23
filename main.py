@@ -1,10 +1,13 @@
-## AGAI_Assignment 1
+## AGAI_Assignments 1 & 2
 ## Author: Amy Moffatt
 
 from typing import Union
 from fastapi import FastAPI
 from pydantic import BaseModel
 from app.bigram_model import BigramModel
+# Imports for Assignment 2
+from fastapi import FastAPI, UploadFile, File
+from app.image_classifier import classify_image
 
 app = FastAPI()
 
@@ -39,3 +42,10 @@ def generate_text(request: TextGenerationRequest):
 def get_embedding(request: EmbeddingRequest):
     embedding = bigram_model.get_embedding(request.word)
     return {"word": request.word, "embedding": embedding}
+
+# New endpoint for Assignment 2
+@app.post("/classify")
+async def classify(file: UploadFile = File(...)):
+    image_bytes = await file.read()
+    predicted_class = classify_image(image_bytes)
+    return {"predicted_class": predicted_class}
